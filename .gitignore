@@ -1,8 +1,18 @@
 *.js
+!.eslintrc.js
+!.prettierrc.js
 !jest.config.js
 *.d.ts
 node_modules
+.DS_Store
+**/*.nkf
+.env
+**/production.ts
+**/development.ts
 
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+coverage
+package-lock.json
+**/package-lock.json

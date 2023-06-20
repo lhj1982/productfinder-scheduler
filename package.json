@@ -5,17 +5,33 @@
     "launch.productfinder.scheduler": "bin/launch.productfinder.scheduler.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run build-src",
+    "build-src": "cd src && npm install && npm run build",
+    "package": "cd src && npm run package",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "diff": "cdk diff --profile gimme_creds",
+    "deploy:dev": "npm run package && NODE_ENV=development cdk deploy --profile CommerceGCTest",
+    "deploy:prod": "npm run package && NODE_ENV=production cdk deploy --profile CommerceGCProd",
+    "format": "prettier --write '{**/*.ts, **/**/*.ts}'",
+    "lint": "eslint ./**/*.ts --fix",
+    "destroy": "cdk destroy --profile gimme_creds",
+    "sync": "cdk synthesize --profile gimme_creds"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
+    "@types/lodash": "^4.14.195",
     "@types/node": "20.1.7",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
     "aws-cdk": "2.84.0",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jest": "^29.5.0",
+    "lodash": "^4.17.21",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "typescript": "~5.0.4"
   },

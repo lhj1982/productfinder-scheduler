@@ -1,0 +1,17 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && npm-run-all build-*",
+    "build-A": "cd create-entry && npm run build",
+    "package": "npm-run-all pk-*",
+    "pk-A": "cd create-entry && npm run package"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}

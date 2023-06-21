@@ -21,17 +21,17 @@ export class LaunchProductfinderSchedulerStack extends cdk.Stack {
 
     const schedulerSQS = new SchedulerSQS(this, 'ProductFinderSchedulerSQS');
 
-    const ProductFinderProductsTableArn = cdk.Fn.importValue('ProductFinderProductsTableArn');
+    const productFinderProductsTableArn = cdk.Fn.importValue('ProductFinderProductsTableArn');
     const productFinderProductsTable: ITable = Table.fromTableArn(
       this,
       'ProductFinderProductsTable',
-      ProductFinderProductsTableArn,
+      productFinderProductsTableArn,
     );
-    const ProductFinderAllowedUsersTableArn = cdk.Fn.importValue('ProductFinderAllowedUsersTableArn');
+    const productFinderAllowedUsersTableArn = cdk.Fn.importValue('ProductFinderAllowedUsersTableArn');
     const productFinderAllowedUsersTable: ITable = Table.fromTableArn(
       this,
       'ProductFinderAllowedUsersTable',
-      ProductFinderAllowedUsersTableArn,
+      productFinderAllowedUsersTableArn,
     );
 
     const createEntryLambda = new Function(this, 'createProductFinderEntryLambda', {
@@ -71,7 +71,7 @@ export class LaunchProductfinderSchedulerStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ProductFinderSchedulerSQSArn', {
       value: schedulerSQS.queue.queueArn,
       description: 'The arn name of scheduler sqs queue',
-      exportName: 'ProductFinderSchedulerSQSArn',
+      exportName: 'productFinderSchedulerSQSArn',
     });
   }
 }

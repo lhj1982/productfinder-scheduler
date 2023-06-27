@@ -1,4 +1,3 @@
-import {Stack, StackProps} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {Function} from "aws-cdk-lib/aws-lambda";
 import {
@@ -9,12 +8,11 @@ import {
     RestApi
 } from "aws-cdk-lib/aws-apigateway";
 
-export class ProductFinderSchedulerApiStack extends Stack {
+export class ProductFinderSchedulerApi extends Construct {
     constructor(scope: Construct,
                 id: string,
-                lambdaFunction: Function,
-                prop?: StackProps) {
-        super(scope, id, prop);
+                lambdaFunction: Function) {
+        super(scope, id);
         const api = new RestApi(this, 'launchProductFinderSchedulerApi', {
             restApiName : 'launch-productfinder-scheduler-api',
             endpointConfiguration: {

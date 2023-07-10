@@ -2,6 +2,7 @@ import {Construct} from "constructs";
 import {Code, Function, Runtime} from "aws-cdk-lib/aws-lambda";
 import {Role} from "aws-cdk-lib/aws-iam";
 import {Fn} from "aws-cdk-lib";
+import {RetentionDays} from "aws-cdk-lib/aws-logs";
 
 export class ProductFinderSchedulerLambda extends Construct {
 
@@ -26,6 +27,7 @@ export class ProductFinderSchedulerLambda extends Construct {
                 PRIMARY_KEY: 'itemId',
                 TOPIC_ARN: topicArn,
             },
-        })
+            logRetention : RetentionDays.ONE_WEEK
+        });
     }
 }

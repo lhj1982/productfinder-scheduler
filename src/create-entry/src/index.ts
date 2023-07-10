@@ -10,7 +10,7 @@ const validateRequest = async (
 ): Promise<{
   isValid: boolean;
   message?: string;
-  styleColors?:string[];
+  data? : {styleColors?:string[], responseUrl: string};
 }> => {
   const { path, httpMethod, body } = event;
   if (path != '/scheduler' || httpMethod != 'POST' || !body) {
@@ -21,11 +21,12 @@ const validateRequest = async (
   }
   try {
     const bodyObj = querystring.parse(body);
-    const { user_id, text } = bodyObj;
+    console.log(`requestBody->${JSON.stringify(bodyObj)}`);
+    const { user_id, text ,response_url} = bodyObj;
     if (text === 'help') {
       return {
         isValid: false,
-        message: `Usage: /scheduler [styleColor,styleColor,styleColor...]`,
+        message: `Usage: /find styleColor,styleColor,styleColor`,
       };
     }
     if(!user_id) {
@@ -52,7 +53,10 @@ const validateRequest = async (
 
     return {
       isValid: true,
-      styleColors: styleColors
+      data : {
+        styleColors : styleColors,
+        responseUrl : response_url
+      }
     };
   } catch (err) {
     return {
@@ -63,8 +67,8 @@ const validateRequest = async (
 };
 
 export const handler = async (event: any = {}): Promise<any> => {
-  const validateResult: { isValid: boolean; message?: string; styleColors?: any } = await validateRequest(event);
-  const { isValid, message } = validateResult;
+  const validateResult: { isValid: boolean; message?: string; data?: any } = await validateRequest(event);
+  const { isValid, message, data } = validateResult;
   if (!isValid) {
     return {
       statusCode: 200,
@@ -76,12 +80,12 @@ export const handler = async (event: any = {}): Promise<any> => {
   }
 
   try {
-    const { styleColors } = validateResult;
+    const { styleColors } = data;
     // publish event message
     if (styleColors.length > 0) {
       const params = {
         TopicArn: TOPIC_ARN,
-        Message: JSON.stringify(styleColors),
+        Message: JSON.stringify(data),
       };
       await sns.publish(params).promise();
 

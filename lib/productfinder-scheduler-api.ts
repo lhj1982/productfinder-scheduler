@@ -7,6 +7,7 @@ import {
     PassthroughBehavior,
     RestApi
 } from "aws-cdk-lib/aws-apigateway";
+import {CfnOutput} from "aws-cdk-lib";
 
 export class ProductFinderSchedulerApi extends Construct {
     constructor(scope: Construct,
@@ -55,5 +56,10 @@ export class ProductFinderSchedulerApi extends Construct {
                 ],
             },
         );
+        new CfnOutput(this, 'ProductFinderApiUrl', {
+            value: api.url,
+            description: 'The url of product finder api gateway',
+            exportName: 'ProductFinderApiUrl',
+        });
     }
 }

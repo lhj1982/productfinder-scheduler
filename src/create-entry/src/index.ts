@@ -6,112 +6,120 @@ const TOPIC_ARN = process.env.TOPIC_ARN || '';
 const sns = new AWS.SNS();
 
 const validateRequest = async (
-  event: any,
+    event: any,
 ): Promise<{
-  isValid: boolean;
-  message?: string;
-  data? : {styleColors?:string[], responseUrl: string};
+    isValid: boolean;
+    message?: string;
+    data?: { styleColors?: string[], responseUrl?: string };
 }> => {
-  const { path, httpMethod, body } = event;
-  if (path != '/scheduler' || httpMethod != 'POST' || !body) {
-    return {
-      isValid: false,
-      message: 'Invalid command.',
-    };
-  }
-  try {
-    const bodyObj = querystring.parse(body);
-    console.log(`requestBody->${JSON.stringify(bodyObj)}`);
-    const { user_id, text ,response_url} = bodyObj;
-    if (text === 'help') {
-      return {
-        isValid: false,
-        message: `Usage: /find styleColor,styleColor,styleColor`,
-      };
+    const {path, httpMethod, body} = event;
+    if (path != '/scheduler' || httpMethod != 'POST' || !body) {
+        return {
+            isValid: false,
+            message: 'Invalid command.',
+        };
     }
-    if(!user_id) {
-      return {
-        isValid: false,
-        message: 'please input your user_id.',
-      };
-    }
-    const data = await db.get({
-        TableName: ALLOWEDUSERS_TABLE_NAME,
-        Key: {
-          userId: user_id,
-        },
-      }).promise();
-    const { Item } = data;
-    if (!Item) {
-      return {
-        isValid: false,
-        message: 'You are not allowed to run this command.',
-      };
-    }
+    try {
+        const bodyObj = querystring.parse(body);
+        console.log(`requestBody->${JSON.stringify(bodyObj)}`);
+        const {user_id, text, response_url} = bodyObj;
+        if (text === 'help') {
+            return {
+                isValid: false,
+                message: `Usage: /find styleColor,styleColor,styleColor`,
+            };
+        }
+        if (!user_id) {
+            return {
+                isValid: false,
+                message: 'please input your user_id.',
+            };
+        }
+        const data = await db.get({
+            TableName: ALLOWEDUSERS_TABLE_NAME,
+            Key: {
+                userId: user_id,
+            },
+        }).promise();
+        const {Item} = data;
+        if (!Item) {
+            return {
+                isValid: false,
+                message: 'You are not allowed to run this command.',
+            };
+        }
 
-    const styleColors = text.toUpperCase().split(',');
-
-    return {
-      isValid: true,
-      data : {
-        styleColors : styleColors,
-        responseUrl : response_url
-      }
-    };
-  } catch (err) {
-    return {
-      isValid: false,
-      message: 'Unknown error.',
-    };
-  }
+        const styleColors = text.toUpperCase().split(',');
+        if (response_url) {
+            return {
+                isValid: true,
+                data: {
+                    styleColors: styleColors,
+                    responseUrl: response_url
+                }
+            };
+        } else {
+            return {
+                isValid: true,
+                data: {
+                    styleColors: styleColors
+                }
+            };
+        }
+    } catch (err) {
+        return {
+            isValid: false,
+            message: 'Unknown error.',
+        };
+    }
 };
 
 export const handler = async (event: any = {}): Promise<any> => {
-  const validateResult: { isValid: boolean; message?: string; data?: any } = await validateRequest(event);
-  const { isValid, message, data } = validateResult;
-  if (!isValid) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        response_type: 'ephemeral',
-        text: message,
-      }),
-    };
-  }
-
-  try {
-    const { styleColors } = data;
-    // publish event message
-    if (styleColors.length > 0) {
-      const params = {
-        TopicArn: TOPIC_ARN,
-        Message: JSON.stringify(data),
-      };
-      await sns.publish(params).promise();
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          response_type: 'ephemeral',
-          text: `productfinder request for ${styleColors.toString()} has been successfully submitted.`,
-        }),
-      };
-    } else {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          response_type: 'ephemeral',
-          text: `Nothing to submit.`,
-        }),
-      };
+    const validateResult: { isValid: boolean; message?: string; data?: any } = await validateRequest(event);
+    const {isValid, message, data} = validateResult;
+    if (!isValid) {
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                response_type: 'ephemeral',
+                text: message,
+            }),
+        };
     }
-  } catch (err) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        response_type: 'ephemeral',
-        text: 'Invalid command parameters.',
-      }),
-    };
-  }
+
+    try {
+        const {styleColors} = data;
+        // publish event message
+        if (styleColors.length > 0) {
+            const params = {
+                TopicArn: TOPIC_ARN,
+                Message: JSON.stringify(data),
+            };
+            await sns.publish(params).promise();
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    response_type: 'ephemeral',
+                    text: `productfinder request for ${styleColors.toString()} has been successfully submitted.`,
+                }),
+            };
+        } else {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    response_type: 'ephemeral',
+                    text: `Nothing to submit.`,
+                }),
+            };
+        }
+    } catch (err) {
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                response_type: 'ephemeral',
+                text: 'Invalid command parameters.',
+            }),
+        };
+    }
 };

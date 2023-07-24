@@ -1,0 +1,9 @@
+qualityConfig:
+  application:
+    name: launch-productfinder-scheduler
+    domain: launch-productfinder
+    owner: launch
+    team: launch
+    email: wei.zhong2@nike.com
+    costcenter: 104420
+    organization: platform engineering - launch

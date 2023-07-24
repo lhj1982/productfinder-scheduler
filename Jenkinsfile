@@ -63,7 +63,7 @@ def config = [
             deployCommand: [
                 aws: deployCommandAws.cntest,
                 image: buildImage,
-                cmd: 'npm install && npm run bmx:cntest',
+                cmd: 'npm run bmx:cntest',
             ]
         ],
         'cnprod': [
@@ -76,7 +76,7 @@ def config = [
             deployCommand: [
                 aws: deployCommandAws.cnprod,
                 image: buildImage,
-                cmd: 'npm install && npm run bmx:cnprod',
+                cmd: 'npm run bmx:cnprod',
             ]
         ]
     ]

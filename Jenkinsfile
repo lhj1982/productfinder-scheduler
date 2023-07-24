@@ -3,7 +3,7 @@
 
 def buildImage = 'artifactory.nike.com:9001/us/uls-bmx-build:latest'
 
-def deploymentEnvTags = [
+def deploymentEnvironmentTags = [
     cntest: [
         'nike-environment': 'cntest',
     ],
@@ -59,7 +59,7 @@ def config = [
                 DEPLOY_TEST: ['Deploy'],
             ],
             cloudEnvironment : 'cntest',
-            tags: deploymentEnvTags.cntest,
+            tags: deploymentEnvironmentTags.cntest,
             deployCommand: [
                 aws: deployCommandAws.cntest,
                 image: buildImage,
@@ -72,11 +72,11 @@ def config = [
                 DEPLOY_PROD: ['Deploy'],
               ],
             cloudEnvironment : 'cnprod',
-            tags: deploymentEnvTags.cnprod,
+            tags: deploymentEnvironmentTags.cnprod,
             deployCommand: [
                 aws: deployCommandAws.cnprod,
                 image: buildImage,
-                cmd: 'npm run bmx:cnprod',
+                cmd: 'npm install npm-run-all && npm run bmx:cntest',
             ]
         ]
     ]

@@ -6,18 +6,7 @@ import {ProductFinderSchedulerStack} from "../lib/productfinder-scheduler-stack"
 
 const app = new cdk.App();
 
-new ProductFinderSchedulerStack(
-    app,
-    `launchProductFinderSchedulerStack-${config.AWS_ACCOUNT}-${config.AWS_REGION}`,
-    {
-        env: {
-            account: config.AWS_ACCOUNT,
-            region: config.AWS_REGION
-        }
-    }
-);
-
-
+new ProductFinderSchedulerStack(app, `launchProductFinderSchedulerStack`, config);
 
 
 

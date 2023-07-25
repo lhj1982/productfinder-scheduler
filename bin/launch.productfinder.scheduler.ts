@@ -6,7 +6,7 @@ import {ProductFinderSchedulerStack} from "../lib/productfinder-scheduler-stack"
 
 const app = new cdk.App();
 
-new ProductFinderSchedulerStack(app, `launchProductFinderSchedulerStack`, config);
+new ProductFinderSchedulerStack(app, `launch-productfinder-scheduler-stack`, config);
 
 
 

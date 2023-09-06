@@ -6,10 +6,10 @@ import { RetentionDays } from "aws-cdk-lib/aws-logs";
 export class ProductFinderSchedulerLambda extends Construct {
   public readonly lambda: Function;
 
-  constructor(scope: Construct, id: string, allowUserTableName: string, topicArn: string) {
+  constructor(scope: Construct, id: string, allowUserTableName: string, topicArn: string, config: any) {
     super(scope, id);
     //role arn
-    const productFinderRoleArn = "arn:aws-cn:iam::734176943427:role/launch-productfinder-role";
+    const productFinderRoleArn = `arn:aws-cn:iam::${config.account}:role/launch-productfinder-role`;
     this.lambda = new Function(this, "launchProductFinderSchedulerLambda", {
       functionName: "launch-productfinder-scheduler-function-lambda",
       runtime: Runtime.NODEJS_16_X,

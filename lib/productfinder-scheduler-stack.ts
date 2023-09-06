@@ -24,6 +24,7 @@ export class ProductFinderSchedulerStack extends Stack {
       "launchProductFinderSchedulerLambdaConstruct",
       schedulerDynamodb.allowUserTable.tableName,
       schedulerSns.topic.topicArn,
+      config
     );
     //add api gateway
     const apiStack = new ProductFinderSchedulerApi(

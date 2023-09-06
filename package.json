@@ -9,7 +9,7 @@
     "build-src": "cd src && npm install && npm run build",
     "package": "cd src && npm run package",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "npm install && npm run package",
     "cdk": "cdk",
     "diff": "cdk diff --profile gimme_creds",
     "bmx:cntest": "cd src/create-entry && npm run prebuild && npm run build && npm run package && NODE_ENV=cntest cdk deploy --require-approval never",

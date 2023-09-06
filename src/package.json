@@ -7,7 +7,7 @@
     "build": "tsc && npm-run-all build-*",
     "build-A": "cd create-entry && npm run build",
     "package": "npm-run-all pk-*",
-    "pk-A": "cd create-entry && npm run package"
+    "pk-A": "cd create-entry && npm run build &&npm run package"
   },
   "author": "",
   "license": "ISC",

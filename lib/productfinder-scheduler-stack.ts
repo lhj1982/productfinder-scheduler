@@ -22,7 +22,7 @@ export class ProductFinderSchedulerStack extends Stack {
     const lambdaStack = new ProductFinderSchedulerLambda(
       this,
       "launchProductFinderSchedulerLambdaConstruct",
-      schedulerDynamodb.allowUserTable.tableName,
+      schedulerDynamodb.tableName,
       schedulerSns.topic.topicArn,
       config
     );

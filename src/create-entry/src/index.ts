@@ -4,6 +4,7 @@ const ALLOWEDUSERS_TABLE_NAME = process.env.ALLOWEDUSERS_TABLE_NAME || '';
 const querystring = require('querystring');
 const TOPIC_ARN = process.env.TOPIC_ARN || '';
 const sns = new AWS.SNS();
+const regex = /^[A-Za-z]{2}-\d{4}-\d{3}$/;
 
 const validateRequest = async (
     event: any,
@@ -13,7 +14,7 @@ const validateRequest = async (
     data?: { styleColors?: string[], responseUrl?: string };
 }> => {
     const {path, httpMethod, body} = event;
-    if (path != '/scheduler' || httpMethod != 'POST' || !body) {
+    if (path != '/find' || httpMethod != 'POST' || !body) {
         return {
             isValid: false,
             message: 'Invalid command.',
@@ -50,6 +51,19 @@ const validateRequest = async (
         }
 
         const styleColors = text.toUpperCase().split(',');
+        let validFlag = true;
+        styleColors.forEach((styleColor: string) => {
+            if(!regex.test(styleColor)){
+                validFlag = false;
+            }
+        });
+        if(!validFlag){
+            return {
+                isValid: false,
+                message: 'some styleColors is invalid, please check your input!',
+            };
+        }
+
         if (response_url) {
             return {
                 isValid: true,

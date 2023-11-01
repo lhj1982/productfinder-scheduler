@@ -18,7 +18,7 @@ export class ProductFinderSchedulerEventBridges extends Construct {
             handler: 'index.handler',
             runtime: Runtime.NODEJS_16_X,
             environment: {
-                URL: `${url}/find`,
+                URL: `${url}find`,
                 MYSQL_HOST: config.mysqlHost,
                 MYSQL_PORT: config.mysqlPort,
                 MYSQL_USER: config.mysqlUser,

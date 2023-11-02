@@ -78,7 +78,8 @@ const validateRequest = async (
             return {
                 isValid: true,
                 data: {
-                    styleColors: styleColors
+                    styleColors: styleColors,
+                    path: path,
                 }
             };
         }

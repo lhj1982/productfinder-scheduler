@@ -10,7 +10,7 @@ export class ProductFinderSchedulerApi extends Construct {
 
   public readonly api: RestApi;
 
-  constructor(scope: Construct, id: string, crawlFunction: Function, productFunction: Function) {
+  constructor(scope: Construct, id: string, lambdaFunction: Function) {
     super(scope, id);
     const api = new RestApi(this, "launchProductFinderSchedulerRestApi", {
       restApiName: "launch-productfinder-scheduler-restApi",
@@ -20,12 +20,12 @@ export class ProductFinderSchedulerApi extends Construct {
     });
     const schedulerResource = api.root.addResource("find");
     // the crawl resource
-    schedulerResource.addMethod("POST", new LambdaIntegration(crawlFunction));
+    schedulerResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
     // the api of add/remove products resource
     const addResource = api.root.addResource("addProducts");
-    addResource.addMethod("POST", new LambdaIntegration(productFunction));
+    addResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
     const removeResource = api.root.addResource("removeProducts");
-    removeResource.addMethod("POST", new LambdaIntegration(productFunction));
+    removeResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
     this.api = api;
   }
 }

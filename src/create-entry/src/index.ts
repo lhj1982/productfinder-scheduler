@@ -4,17 +4,17 @@ const ALLOWEDUSERS_TABLE_NAME = process.env.ALLOWEDUSERS_TABLE_NAME || '';
 const querystring = require('querystring');
 const TOPIC_ARN = process.env.TOPIC_ARN || '';
 const sns = new AWS.SNS();
-const regex = /^[A-Za-z]{2}-\d{4}-\d{3}$/;
+const regex = /^[A-Za-z]{2}\d{4}-\d{3}$/;
 
 const validateRequest = async (
     event: any,
 ): Promise<{
     isValid: boolean;
     message?: string;
-    data?: { styleColors?: string[], responseUrl?: string };
+    data?: { styleColors?: string[], responseUrl?: string, path?: string };
 }> => {
     const {path, httpMethod, body} = event;
-    if (path != '/find' || httpMethod != 'POST' || !body) {
+    if ((path != '/find' && path != '/add_products' && path != '/remove_products') || httpMethod != 'POST' || !body) {
         return {
             isValid: false,
             message: 'Invalid command.',
@@ -27,7 +27,7 @@ const validateRequest = async (
         if (text === 'help') {
             return {
                 isValid: false,
-                message: `Usage: /find styleColor,styleColor,styleColor`,
+                message: `Usage: ${path} styleColor,styleColor,styleColor`,
             };
         }
         if (!user_id) {
@@ -53,11 +53,12 @@ const validateRequest = async (
         const styleColors = text.toUpperCase().split(',');
         let validFlag = true;
         styleColors.forEach((styleColor: string) => {
-            if(!regex.test(styleColor)){
+            if (!regex.test(styleColor)) {
+                console.log(`invalid styleColor:${styleColor}`);
                 validFlag = false;
             }
         });
-        if(!validFlag){
+        if (!validFlag) {
             return {
                 isValid: false,
                 message: 'some styleColors is invalid, please check your input!',
@@ -69,7 +70,8 @@ const validateRequest = async (
                 isValid: true,
                 data: {
                     styleColors: styleColors,
-                    responseUrl: response_url
+                    responseUrl: response_url,
+                    path: path,
                 }
             };
         } else {
@@ -102,7 +104,7 @@ export const handler = async (event: any = {}): Promise<any> => {
     }
 
     try {
-        const {styleColors} = data;
+        const {styleColors,path} = data;
         // publish event message
         if (styleColors.length > 0) {
             const params = {
@@ -115,7 +117,7 @@ export const handler = async (event: any = {}): Promise<any> => {
                 statusCode: 200,
                 body: JSON.stringify({
                     response_type: 'ephemeral',
-                    text: `productfinder request for ${styleColors.toString()} has been successfully submitted.`,
+                    text: `request ${path} for ${styleColors.toString()} has been successfully submitted.`,
                 }),
             };
         } else {

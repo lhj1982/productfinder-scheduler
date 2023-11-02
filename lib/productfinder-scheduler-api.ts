@@ -22,9 +22,9 @@ export class ProductFinderSchedulerApi extends Construct {
     // the crawl resource
     schedulerResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
     // the api of add/remove products resource
-    const addResource = api.root.addResource("addProducts");
+    const addResource = api.root.addResource("add_products");
     addResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
-    const removeResource = api.root.addResource("removeProducts");
+    const removeResource = api.root.addResource("remove_products");
     removeResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
     this.api = api;
   }

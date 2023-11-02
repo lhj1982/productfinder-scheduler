@@ -11,12 +11,12 @@ export class ProductFinderSchedulerLambda extends Construct {
     super(scope, id);
     //role arn
     const productFinderRoleArn = `arn:aws-cn:iam::${config.account}:role/launch-productfinder-role`;
-    this.lambda = new Function(this, "launchProductFinderFindLambda", {
-      functionName: "launch-productfinder-find-lambda",
+    this.lambda = new Function(this, "launchProductFinderSchedulerLambda", {
+      functionName: "launch-productfinder-scheduler-lambda",
       runtime: Runtime.NODEJS_16_X,
       code: Code.fromAsset("src/create-entry/lib"),
       handler: "index.handler",
-      role: Role.fromRoleArn(this, "existingFindLambdaRole", productFinderRoleArn),
+      role: Role.fromRoleArn(this, "existingSchedulerLambdaRole", productFinderRoleArn),
       description: "Initialize a productFinder automation request",
       environment: {
         ALLOWEDUSERS_TABLE_NAME: allowUserTableName,

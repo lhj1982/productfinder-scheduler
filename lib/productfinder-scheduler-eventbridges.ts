@@ -33,7 +33,7 @@ export class ProductFinderSchedulerEventBridges extends Construct {
 
         const rule = new Rule(this, 'productFinderAutoExecutorRule', {
             ruleName : 'productFinderAutoExecutorRule',
-            schedule: Schedule.cron({ minute: '0', hour: '1'}),
+            schedule: Schedule.cron({ minute: '5', hour: '16'}),
             targets : [new LambdaFunction(productFinderAutoExecutor)]
         });
     }

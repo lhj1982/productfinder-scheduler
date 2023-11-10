@@ -4,7 +4,7 @@ const ALLOWEDUSERS_TABLE_NAME = process.env.ALLOWEDUSERS_TABLE_NAME || '';
 const querystring = require('querystring');
 const TOPIC_ARN = process.env.TOPIC_ARN || '';
 const sns = new AWS.SNS();
-const regex = /^[A-Za-z]{2}\d{4}-\d{3}$/;
+const regex = /^[A-Za-z\d]{2}\d{4}-\d{3}$/;
 
 const validateRequest = async (
     event: any,

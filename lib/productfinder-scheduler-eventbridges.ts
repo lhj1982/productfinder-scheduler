@@ -5,6 +5,7 @@ import {RetentionDays} from "aws-cdk-lib/aws-logs";
 import {Rule, Schedule} from "aws-cdk-lib/aws-events";
 import {LambdaFunction} from "aws-cdk-lib/aws-events-targets";
 import * as cdk from 'aws-cdk-lib';
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 
 export class ProductFinderSchedulerEventBridges extends Construct {
 
@@ -12,6 +13,14 @@ export class ProductFinderSchedulerEventBridges extends Construct {
         super(scope, id);
         // import the role of product finder
         const roleArn = `arn:aws-cn:iam::${config.account}:role/launch-productfinder-role`;
+        const vpc = ec2.Vpc.fromVpcAttributes(this, "autoExecutorVpc", {
+            vpcId: config.mysqlVpc,
+            availabilityZones: ["cn-northwest-1"],
+            privateSubnetIds: config.mysqlSubnet
+        });
+        const securityGroups = config.mysqlSgs.map((sgId: string) => {
+            return ec2.SecurityGroup.fromSecurityGroupId(this, `autoExecutor-${sgId}`, sgId);
+        });
         const productFinderAutoExecutor = new Function(this, 'productFinderAutoExecutor', {
             functionName: 'launch-productfinder-autoExecutor',
             code: Code.fromAsset('src/auto-executor/lib'),
@@ -26,15 +35,17 @@ export class ProductFinderSchedulerEventBridges extends Construct {
                 MYSQL_DATABASE: config.mysqlDatabase
             },
             description: 'a scheduler lambda of periodic searching',
-            role : Role.fromRoleArn(this, 'existingAutoExecutorRole',roleArn),
-            logRetention : RetentionDays.ONE_WEEK,
-            timeout: cdk.Duration.seconds(60)
+            role: Role.fromRoleArn(this, 'existingAutoExecutorRole', roleArn),
+            logRetention: RetentionDays.ONE_WEEK,
+            timeout: cdk.Duration.seconds(60),
+            vpc: vpc,
+            securityGroups: securityGroups
         });
 
         const rule = new Rule(this, 'productFinderAutoExecutorRule', {
-            ruleName : 'productFinderAutoExecutorRule',
-            schedule: Schedule.cron({ minute: '5', hour: '16'}),
-            targets : [new LambdaFunction(productFinderAutoExecutor)]
+            ruleName: 'productFinderAutoExecutorRule',
+            schedule: Schedule.cron({minute: '5', hour: '16'}),
+            targets: [new LambdaFunction(productFinderAutoExecutor)]
         });
     }
 }

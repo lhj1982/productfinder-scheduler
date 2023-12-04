@@ -31,7 +31,8 @@ export class ProductFinderSchedulerStack extends Stack {
         const apiStack = new ProductFinderSchedulerApi(
             this,
             "launchProductFinderSchedulerApiConstruct",
-            lambdaStack.lambda
+            lambdaStack.schedulerLambda,
+            lambdaStack.productLambda
         );
         // event bridges
         new ProductFinderSchedulerEventBridges(this, 'launchProductFinderConsumerEvent', config, apiStack.api.url);

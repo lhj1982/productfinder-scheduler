@@ -1,0 +1,19 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "npm install",
+    "build": "tsc",
+    "package": "npm prune --production && cp -R node_modules lib/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moment-timezone": "^0.5.43",
+    "moment": "^2.29.1",
+    "axios": "^0.21.1",
+    "mysql2": "^3.6.2"
+  }
+}

@@ -7,15 +7,12 @@
     "prebuild": "npm-run-all prebuild-*",
     "prebuild-A": "cd auto-executor && npm install",
     "prebuild-B": "cd create-entry && npm install",
-    "prebuild-C": "cd create-product && npm install",
     "build": "npm-run-all build-*",
     "build-A": "cd auto-executor && npm run build",
     "build-B": "cd create-entry && npm run build",
-    "build-C": "cd create-product && npm run build",
     "package": "npm-run-all pk-*",
     "pk-A": "cd auto-executor && npm run package",
-    "pk-B": "cd create-entry && npm run package",
-    "pk-C": "cd create-product && npm run package"
+    "pk-B": "cd create-entry && npm run package"
   },
   "author": "",
   "license": "ISC",

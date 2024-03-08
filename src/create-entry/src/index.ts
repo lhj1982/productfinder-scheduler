@@ -1,10 +1,15 @@
-const AWS = require('aws-sdk');
-const db = new AWS.DynamoDB.DocumentClient();
+// @ts-ignore
+import querystring from "querystring";
+import {SNSClient, PublishCommand} from "@aws-sdk/client-sns";
+import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
+
 const ALLOWEDUSERS_TABLE_NAME = process.env.ALLOWEDUSERS_TABLE_NAME || '';
-const querystring = require('querystring');
 const TOPIC_ARN = process.env.TOPIC_ARN || '';
-const sns = new AWS.SNS();
 const regex = /^[A-Za-z\d]{2}\d{4}-\d{3}$/;
+
+const snsClient = new SNSClient({region: "cn-northwest-1"});
+const dynamoDBClient = new DynamoDBClient({region: "cn-northwest-1"});
+
 
 const validateRequest = async (
     event: any,
@@ -36,12 +41,15 @@ const validateRequest = async (
                 message: 'please input your user_id.',
             };
         }
-        const data = await db.get({
+        const command = new GetItemCommand({
             TableName: ALLOWEDUSERS_TABLE_NAME,
             Key: {
-                userId: user_id,
+                userId: {
+                    S: user_id
+                },
             },
-        }).promise();
+        });
+        const data = await dynamoDBClient.send(command);
         const {Item} = data;
         if (!Item) {
             return {
@@ -105,14 +113,15 @@ export const handler = async (event: any = {}): Promise<any> => {
     }
 
     try {
-        const {styleColors,path} = data;
+        const {styleColors, path} = data;
         // publish event message
         if (styleColors.length > 0) {
             const params = {
                 TopicArn: TOPIC_ARN,
                 Message: JSON.stringify(data),
             };
-            await sns.publish(params).promise();
+            const command = new PublishCommand(params);
+            await snsClient.send(command);
 
             return {
                 statusCode: 200,

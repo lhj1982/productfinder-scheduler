@@ -1,5 +1,4 @@
-// @ts-ignore
-import querystring from "querystring";
+const querystring = require('querystring');
 import {SNSClient, PublishCommand} from "@aws-sdk/client-sns";
 import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
 

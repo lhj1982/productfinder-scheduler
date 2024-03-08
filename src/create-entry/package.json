@@ -13,7 +13,6 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.529.1",
     "@aws-sdk/client-sns": "^3.529.1",
-    "moment": "^2.29.1",
-    "query-string": "^9.0.0"
+    "moment": "^2.29.1"
   }
 }

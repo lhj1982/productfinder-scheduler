@@ -44,7 +44,7 @@ export const handler = async (event: any): Promise<any> => {
         console.log(`styleColors is empty!`);
         return event;
     }
-    console.log(`styleColors: ${JSON.stringify(styleColors)}`);
+    console.log(`products number: ${styleColors.length}, styleColors: ${JSON.stringify(styleColors)}`);
     const data = new URLSearchParams();
     data.append('text', styleColors.join(','));
     data.append('user_id', 'VIP');

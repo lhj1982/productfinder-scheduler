@@ -58,19 +58,19 @@ const validateRequest = async (
         }
 
         const styleColors = text.toUpperCase().split(',');
-        let validFlag = true;
-        styleColors.forEach((styleColor: string) => {
-            if (!regex.test(styleColor)) {
-                console.log(`invalid styleColor:${styleColor}`);
-                validFlag = false;
-            }
-        });
-        if (!validFlag) {
-            return {
-                isValid: false,
-                message: 'some styleColors is invalid, please check your input!',
-            };
-        }
+        // let validFlag = true;
+        // styleColors.forEach((styleColor: string) => {
+        //     if (!regex.test(styleColor)) {
+        //         console.log(`invalid styleColor:${styleColor}`);
+        //         validFlag = false;
+        //     }
+        // });
+        // if (!validFlag) {
+        //     return {
+        //         isValid: false,
+        //         message: 'some styleColors is invalid, please check your input!',
+        //     };
+        // }
 
         if (response_url) {
             return {

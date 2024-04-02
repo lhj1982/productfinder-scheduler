@@ -4,7 +4,7 @@ import {DynamoDBClient, GetItemCommand} from "@aws-sdk/client-dynamodb";
 
 const ALLOWEDUSERS_TABLE_NAME = process.env.ALLOWEDUSERS_TABLE_NAME || '';
 const TOPIC_ARN = process.env.TOPIC_ARN || '';
-const regex = /^[A-Za-z\d]{2}\d{4}-\d{3}$/;
+// const regex = /^[A-Za-z\d]{2}\d{4}-\d{3}$/;
 
 const snsClient = new SNSClient({region: "cn-northwest-1"});
 const dynamoDBClient = new DynamoDBClient({region: "cn-northwest-1"});

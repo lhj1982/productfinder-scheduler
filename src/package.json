@@ -5,14 +5,14 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "npm-run-all prebuild-*",
-    "prebuild-A": "cd auto-executor && npm install",
-    "prebuild-B": "cd create-entry && npm install",
+    "prebuild-auto-executor": "cd auto-executor && npm install",
+    "prebuild-slack-command": "cd slack-command && npm install",
     "build": "npm-run-all build-*",
-    "build-A": "cd auto-executor && npm run build",
-    "build-B": "cd create-entry && npm run build",
+    "build-auto-executor": "cd auto-executor && npm run build",
+    "build-slack-command": "cd slack-command && npm run build",
     "package": "npm-run-all pk-*",
-    "pk-A": "cd auto-executor && npm run package",
-    "pk-B": "cd create-entry && npm run package"
+    "pk-auto-executor": "cd auto-executor && npm run package",
+    "pk-slack-command": "cd slack-command && npm run package"
   },
   "author": "",
   "license": "ISC",

@@ -27,24 +27,25 @@ export class ProductFinderSchedulerEventBridges extends Construct {
             handler: 'index.handler',
             runtime: Runtime.NODEJS_16_X,
             environment: {
-                URL: `${url}find`,
+                URL: `${url}crawler`,
                 MYSQL_HOST: config.mysqlHost,
                 MYSQL_PORT: config.mysqlPort,
                 MYSQL_USER: config.mysqlUser,
                 MYSQL_PASSWORD: config.mysqlPassword,
-                MYSQL_DATABASE: config.mysqlDatabase
+                MYSQL_DATABASE: config.mysqlDatabase,
+                PAGE_SIZE : config.pageSize
             },
             description: 'a scheduler lambda of periodic searching',
             role: Role.fromRoleArn(this, 'existingAutoExecutorRole', roleArn),
             logRetention: RetentionDays.ONE_WEEK,
-            timeout: cdk.Duration.seconds(60),
+            timeout: cdk.Duration.seconds(15 * 60),
             vpc: vpc,
             securityGroups: securityGroups
         });
 
         const rule = new Rule(this, 'productFinderAutoExecutorRule', {
             ruleName: 'productFinderAutoExecutorRule',
-            schedule: Schedule.cron({minute: '5', hour: '16'}),
+            schedule: Schedule.cron({minute: '0/10'}),
             targets: [new LambdaFunction(productFinderAutoExecutor)]
         });
     }

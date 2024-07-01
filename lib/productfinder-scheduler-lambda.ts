@@ -14,7 +14,7 @@ export class ProductFinderSchedulerLambda extends Construct {
     this.lambda = new Function(this, "launchProductFinderSchedulerLambda", {
       functionName: "launch-productfinder-scheduler-lambda",
       runtime: Runtime.NODEJS_16_X,
-      code: Code.fromAsset("src/create-entry/lib"),
+      code: Code.fromAsset("src/slack-command/lib"),
       handler: "index.handler",
       role: Role.fromRoleArn(this, "existingSchedulerLambdaRole", productFinderRoleArn),
       description: "Initialize a productFinder automation request",

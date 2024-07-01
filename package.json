@@ -5,7 +5,7 @@
     "launch.productfinder.scheduler": "bin/launch.productfinder.scheduler.js"
   },
   "scripts": {
-    "build": "tsc && npm run build-src",
+    "build": "npm install && npm run build-src",
     "build-src": "cd src && npm install && npm run prebuild && npm run build && npm run package",
     "package": "cd src && npm run package",
     "watch": "tsc -w",

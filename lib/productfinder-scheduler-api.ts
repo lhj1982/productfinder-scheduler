@@ -19,8 +19,11 @@ export class ProductFinderSchedulerApi extends Construct {
       }
     });
     const schedulerResource = api.root.addResource("find");
-    // the crawl resource
+    // the find resource
     schedulerResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
+    // the crawler resource
+    const crawlerResource = api.root.addResource("crawler");
+    crawlerResource.addMethod("POST", new LambdaIntegration(lambdaFunction));
     // the api of add/remove products resource
     const addResource = api.root.addResource("add_products");
     addResource.addMethod("POST", new LambdaIntegration(lambdaFunction));

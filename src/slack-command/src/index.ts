@@ -8,6 +8,7 @@ const TOPIC_ARN = process.env.TOPIC_ARN || '';
 const snsClient = new SNSClient({region: "cn-northwest-1"});
 const dynamoDBClient = new DynamoDBClient({region: "cn-northwest-1"});
 
+const allowedPath = ['/find', '/add_products', '/remove_products', '/crawler'];
 
 const validateRequest = async (
     event: any,
@@ -17,7 +18,7 @@ const validateRequest = async (
     data?: { styleColors?: string[], responseUrl?: string, path?: string };
 }> => {
     const {path, httpMethod, body} = event;
-    if ((path != '/find' && path != '/add_products' && path != '/remove_products') || httpMethod != 'POST' || !body) {
+    if (allowedPath.indexOf(path) < 0 || httpMethod != 'POST' || !body) {
         return {
             isValid: false,
             message: 'Invalid command.',

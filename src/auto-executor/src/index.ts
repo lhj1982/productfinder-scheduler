@@ -2,7 +2,7 @@ import axios from "axios";
 import * as process from "node:process";
 
 const URL = process.env.URL || '';
-const mysql = require('mysql2')
+const mysql = require('mysql2/promise')
 const host = process.env.MYSQL_HOST || '';
 const port = process.env.MYSQL_PORT || '';
 const user = process.env.MYSQL_USER || '';
@@ -10,40 +10,15 @@ const password = process.env.MYSQL_PASSWORD || '';
 const database = process.env.MYSQL_DATABASE || '';
 const pageSize = process.env.PAGE_SIZE
 
-const getConnection = () => {
-    return mysql.createConnection({
-        host: host,
-        port: port,
-        user: user,
-        password: password,
-        database: database
-    });
+
+const sleep = (ms: number): Promise<any> => {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const getProducts = (time: string): Promise<{ id: number; stylecolor: string; } []> => {
-    return new Promise(async (resolve, reject) => {
-        const connection = getConnection();
-        try {
-            const queryCount = pageSize ? Number(pageSize) : 10;
-            connection.query(`select p.id, p.stylecolor from products p where p.enabled = 1 and p.stylecolor not in (select s.stylecolor from product_schedule_record s where schedule_day = '${time}') limit 0, ${queryCount}`, (error: any, results: any) => {
-                if (error) {
-                    console.log(`query products from db, error=${error}`);
-                    reject(error);
-                } else {
-                    console.log(`query products from db, success, products=${JSON.stringify(results)}`);
-                    resolve(results
-                        .filter((product: { stylecolor: string; id: number }) => product.stylecolor)
-                        .map((product: { stylecolor: string; id: number }) => product));
-                }
-            })
-        } catch (error) {
-            console.log(`query styleColors error=${error}`);
-            reject(error);
-        } finally {
-            connection.end();
-        }
-    })
-}
+const getRandomInt = (minDelaySecond: number, maxDelaySecond: number) => {
+    return Math.floor(Math.random() * (maxDelaySecond - minDelaySecond + 1) + minDelaySecond);
+};
+
 
 const getTime = () => {
     const currentDate = new Date();
@@ -53,34 +28,77 @@ const getTime = () => {
     return `${year}-${month}-${day}`;
 }
 
-const insertScheduleRecord = (product: { id: number, stylecolor: string }, time: string) => {
-    return new Promise(async (resolve, reject) => {
-        const connection = getConnection();
-        try {
-            connection.query("insert into product_schedule_record (product_id, stylecolor, schedule_day) values (?,?,?)",
-                [product.id, product.stylecolor, time],
-                (error: any, result: any) => {
-                    if (error) {
-                        console.log(`insert schedule record, error=${error}`);
-                    } else {
-                        resolve("insert schedule record success");
-                    }
-                });
-        } catch (error) {
-            console.log(`insert schedule record, error=${error}`);
-        } finally {
-            connection.end();
+
+const getConnection = async () => {
+    return await mysql.createConnection({
+        host: host,
+        port: port,
+        user: user,
+        password: password,
+        database: database
+    });
+}
+
+const getProducts = async (time: string): Promise<{ id: number, stylecolor: string }[]> => {
+    const connection = await getConnection();
+    try {
+        let products: { id: number, stylecolor: string }[] = [];
+        const highRatingCount = pageSize ? Number(pageSize) : 10;
+        const [highRatingResult] = await connection.query(
+            `select 
+                p.id, p.stylecolor
+             from products p
+             where p.enabled = 1
+                  and p.rating >= 50
+                  and p.stylecolor not in (
+                      select 
+                        s.stylecolor 
+                      from product_schedule_record s 
+                      where schedule_day = ?)
+             limit 0, ?`
+        , [time, highRatingCount]);
+        const highRatingList = highRatingResult.filter((product: { stylecolor: string; }) => product.stylecolor);
+        console.log(`query products(rating>=50) from db, success, products number:${JSON.stringify(highRatingList.length)}`);
+        products = products.concat(highRatingList);
+        if (highRatingList.length < highRatingCount) {
+            const lowRatingCount = highRatingCount - highRatingList.length;
+            const [lowRatingResult] = await connection.query(
+                `select 
+                    p.id, p.stylecolor
+                 from products p
+                 where p.enabled = 1
+                    and p.rating < 50
+                    and (select count(*) from product_prices s where s.product_id = p.id) < 30
+                    and p.stylecolor not in (
+                        select 
+                            s.stylecolor 
+                        from product_schedule_record s 
+                        where schedule_day = ?)
+                 limit 0, ?`
+            , [time, lowRatingCount]);
+            const lowRatingList = lowRatingResult.filter((product: { stylecolor: string; }) => product.stylecolor);
+            console.log(`query products(rating<50) from db, success, products number:${JSON.stringify(lowRatingList.length)}`);
+            products = products.concat(lowRatingList);
         }
-    })
+        return products;
+    } catch (error) {
+        console.log(`query styleColors error =${error}`);
+        return [];
+    } finally {
+        await connection.end();
+    }
 }
 
-const sleep = (ms: number): Promise<any> => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+const insertScheduleRecord = async (product: { id: number, stylecolor: string }, time: string) => {
+    const connection = await getConnection();
+    try {
+        await connection.execute("insert into product_schedule_record (product_id, stylecolor, schedule_day) values (?,?,?)", [product.id, product.stylecolor, time]);
+    } catch (error) {
+        console.log(`insert schedule record, error=${error}`);
+    } finally {
+        await connection.end();
+    }
 }
-
-const getRandomInt = (minDelaySecond: number, maxDelaySecond: number) => {
-    return Math.floor(Math.random() * (maxDelaySecond - minDelaySecond + 1) + minDelaySecond);
-};
 
 export const handler = async (event: any): Promise<any> => {
     try {
